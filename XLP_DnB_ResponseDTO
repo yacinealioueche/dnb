@@ -1,0 +1,16 @@
+public class XLP_DnB_ResponseDTO {
+
+    public List<AccountResponse> accounts;
+
+    public class AccountResponse {
+
+        public String dunsNumber;
+        public String legalName;
+        public String tradingName;
+        public Decimal revenue;
+        public Integer employeeCount;
+        public String website;
+        public String country;
+
+    }
+}
