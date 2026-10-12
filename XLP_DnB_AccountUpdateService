@@ -1,0 +1,22 @@
+public with sharing class XLP_DnB_AccountUpdateService {
+
+    public static void updateAccounts(
+        List<Account> accounts
+    ) {
+
+        if(accounts.isEmpty()) {
+            return;
+        }
+
+        Database.SaveResult[] results =
+
+            Database.update(
+                accounts,
+                false
+            );
+
+        XLP_DnB_Logger.logResults(
+            results
+        );
+    }
+}
