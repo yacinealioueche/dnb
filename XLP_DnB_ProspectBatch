@@ -1,0 +1,37 @@
+global class XLP_DnB_ProspectBatch
+implements Database.Batchable<Account>,
+           Database.AllowsCallouts {
+
+    global Database.QueryLocator start(
+        Database.BatchableContext bc
+    ) {
+
+        return Database.getQueryLocator(
+
+            [SELECT Id,
+                    Name,
+                    XLP_DunsNumber__c
+             FROM Account
+             WHERE RecordType.DeveloperName =
+                   :XLP_DnB_Constants.CUSTOMER_RT
+             AND XLP_MDM_AccountStatus__c =
+                   :XLP_DnB_Constants.STATUS_PROSPECT
+             AND XLP_DunsNumber__c != null]
+
+        );
+    }
+
+    global void execute(
+        Database.BatchableContext bc,
+        List<Account> scope
+    ) {
+
+        XLP_DnB_IntegrationService.process(scope);
+    }
+
+    global void finish(
+        Database.BatchableContext bc
+    ) {
+
+    }
+}
