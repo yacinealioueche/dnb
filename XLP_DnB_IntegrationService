@@ -1,0 +1,79 @@
+public with sharing class XLP_DnB_IntegrationService {
+
+    public static void process(
+        List<Account> accounts
+    ) {
+
+        List<String> dunsNumbers =
+            new List<String>();
+
+        for(Account accountRecord : accounts) {
+
+            if(accountRecord.XLP_DunsNumber__c != null) {
+
+                dunsNumbers.add(
+                    accountRecord.XLP_DunsNumber__c
+                );
+            }
+        }
+
+        XLP_DnB_RequestDTO requestDto =
+            new XLP_DnB_RequestDTO();
+
+        requestDto.enrichmentType = 'PROSPECT';
+        requestDto.dunsNumbers = dunsNumbers;
+
+        HttpRequest request =
+            new HttpRequest();
+
+        request.setEndpoint(
+            'callout:XLP_DNB_APIM/enrichment'
+        );
+
+        request.setMethod('POST');
+
+        request.setHeader(
+            'Content-Type',
+            'application/json'
+        );
+
+        request.setBody(
+            JSON.serialize(requestDto)
+        );
+
+        Http http = new Http();
+
+        HttpResponse response =
+            http.send(request);
+
+        if(response.getStatusCode() == 200) {
+
+            XLP_DnB_ResponseDTO responseDto =
+
+                (XLP_DnB_ResponseDTO)
+
+                JSON.deserialize(
+                    response.getBody(),
+                    XLP_DnB_ResponseDTO.class
+                );
+
+            List<Account> accountsToUpdate =
+
+                XLP_DnB_ResponseMapper.map(
+                    responseDto
+                );
+
+            XLP_DnB_AccountUpdateService
+                .updateAccounts(
+                    accountsToUpdate
+                );
+
+        } else {
+
+            XLP_DnB_Logger.logError(
+                response.getStatusCode(),
+                response.getBody()
+            );
+        }
+    }
+}
