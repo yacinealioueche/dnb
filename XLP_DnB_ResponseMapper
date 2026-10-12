@@ -1,0 +1,84 @@
+public with sharing class XLP_DnB_ResponseMapper {
+
+    public static List<Account> map(
+        XLP_DnB_ResponseDTO response
+    ) {
+
+        Set<String> dunsNumbers =
+            new Set<String>();
+
+        for(
+            XLP_DnB_ResponseDTO.AccountResponse r
+            : response.accounts
+        ) {
+
+            dunsNumbers.add(
+                r.dunsNumber
+            );
+        }
+
+        Map<String,Account> accountMap =
+            new Map<String,Account>();
+
+        for(Account accountRecord :
+
+            [SELECT Id,
+                    XLP_DunsNumber__c
+             FROM Account
+             WHERE XLP_DunsNumber__c
+                   IN :dunsNumbers]
+
+        ) {
+
+            accountMap.put(
+                accountRecord.XLP_DunsNumber__c,
+                accountRecord
+            );
+        }
+
+        List<Account> updates =
+            new List<Account>();
+
+        for(
+            XLP_DnB_ResponseDTO.AccountResponse record :
+            response.accounts
+        ) {
+
+            Account existingAccount =
+                accountMap.get(
+                    record.dunsNumber
+                );
+
+            if(existingAccount == null) {
+                continue;
+            }
+
+            existingAccount.Legal_Name__c =
+                record.legalName;
+
+            existingAccount.Trading_Name__c =
+                record.tradingName;
+
+            existingAccount.Employee_Count__c =
+                record.employeeCount;
+
+            existingAccount.Revenue__c =
+                record.revenue;
+
+            existingAccount.Website__c =
+                record.website;
+
+            existingAccount.Country__c =
+                record.country;
+
+            existingAccount.DnB_Last_Refresh_Date__c =
+                Date.today();
+
+            updates.add(
+                existingAccount
+            );
+        }
+
+        return updates;
+    }
+}
