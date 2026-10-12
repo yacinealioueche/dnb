@@ -1,10 +1,11 @@
 global class XLP_DnB_ProspectBatch
-implements Database.Batchable<Account>,
-           Database.AllowsCallouts {
+    implements Database.Batchable<SObject>,
+               Database.AllowsCallouts {
 
     global Database.QueryLocator start(
         Database.BatchableContext bc
     ) {
+
         return Database.getQueryLocator(
             [
                 SELECT Id,
@@ -19,10 +20,13 @@ implements Database.Batchable<Account>,
 
     global void execute(
         Database.BatchableContext bc,
-        List<Account> scope
+        List<SObject> scope
     ) {
 
-        XLP_DnB_IntegrationService.process(scope);
+        List<Account> accounts =
+            (List<Account>) scope;
+
+        XLP_DnB_IntegrationService.process(accounts);
     }
 
     global void finish(
