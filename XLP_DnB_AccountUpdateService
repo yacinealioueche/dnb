@@ -1,22 +1,32 @@
-public with sharing class XLP_DnB_AccountUpdateService {
+global class XLP_DnB_ProspectBatch
+implements Database.Batchable<Account>,
+           Database.AllowsCallouts {
 
-    public static void updateAccounts(
-        List<Account> accounts
+    global Database.QueryLocator start(
+        Database.BatchableContext bc
+    ) {
+        return Database.getQueryLocator(
+            [
+                SELECT Id,
+                       Name,
+                       XLP_DunsNumber__c
+                FROM Account
+                WHERE XLP_MDM_AccountStatus__c = 'Prospect'
+                AND XLP_DunsNumber__c != null
+            ]
+        );
+    }
+
+    global void execute(
+        Database.BatchableContext bc,
+        List<Account> scope
     ) {
 
-        if(accounts.isEmpty()) {
-            return;
-        }
+        XLP_DnB_IntegrationService.process(scope);
+    }
 
-        Database.SaveResult[] results =
-
-            Database.update(
-                accounts,
-                false
-            );
-
-        XLP_DnB_Logger.logResults(
-            results
-        );
+    global void finish(
+        Database.BatchableContext bc
+    ) {
     }
 }
