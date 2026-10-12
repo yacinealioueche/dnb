@@ -1,0 +1,8 @@
+public class XLP_DnB_Constants {
+
+    public static final String STATUS_PROSPECT = 'Prospect';
+    public static final String STATUS_ACTIVE = 'Active';
+
+    public static final String CUSTOMER_RT = 'Customer';
+
+}
