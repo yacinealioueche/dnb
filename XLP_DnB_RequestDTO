@@ -1,0 +1,7 @@
+public class XLP_DnB_RequestDTO {
+
+    public String enrichmentType;
+
+    public List<String> dunsNumbers;
+
+}
