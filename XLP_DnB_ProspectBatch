@@ -5,19 +5,15 @@ implements Database.Batchable<Account>,
     global Database.QueryLocator start(
         Database.BatchableContext bc
     ) {
-
         return Database.getQueryLocator(
-
-            [SELECT Id,
-                    Name,
-                    XLP_DunsNumber__c
-             FROM Account
-             WHERE RecordType.DeveloperName =
-                   :XLP_DnB_Constants.CUSTOMER_RT
-             AND XLP_MDM_AccountStatus__c =
-                   :XLP_DnB_Constants.STATUS_PROSPECT
-             AND XLP_DunsNumber__c != null]
-
+            [
+                SELECT Id,
+                       Name,
+                       XLP_DunsNumber__c
+                FROM Account
+                WHERE XLP_MDM_AccountStatus__c = 'Prospect'
+                AND XLP_DunsNumber__c != null
+            ]
         );
     }
 
@@ -32,6 +28,5 @@ implements Database.Batchable<Account>,
     global void finish(
         Database.BatchableContext bc
     ) {
-
     }
 }
