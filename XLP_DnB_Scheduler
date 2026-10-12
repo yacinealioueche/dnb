@@ -1,0 +1,10 @@
+global class XLP_DnB_Scheduler implements Schedulable {
+
+    global void execute(SchedulableContext sc) {
+
+        Database.executeBatch(
+            new XLP_DnB_ProspectBatch(),
+            200
+        );
+    }
+}
